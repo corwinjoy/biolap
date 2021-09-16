@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<Schema name="SEQ">
+
+
+<!-- Shared dimensions -->
+
+<Dimension name="GO">
+  <Hierarchy hasAll="true" allMemberName="All Terms" primaryKey="TERM2_ID">
+    <Table name="GO_TERM"/>
+    <Level name="TERM ID" type="Numeric"
+        column="TERM2_ID" nameColumn="NAME"
+        parentColumn="TERM1_ID"
+        nullParentValue="1" uniqueMembers="true">
+      <Closure parentColumn="TERM1_ID" childColumn="TERM2_ID">
+        <Table name="GRAPH_PATH"/>
+      </Closure>
+    </Level>
+  </Hierarchy>
+</Dimension>
+
+ 
+
+<!-- Cubes -->
+
+<Cube name="Proteins">
+    <Table name="SEQ_FACTS"/>
+    <DimensionUsage name="GO" source="GO" foreignKey="GO_ID"/>
+    
+    <Dimension name="Taxonomy">
+    <Hierarchy hasAll="true" allMemberName="All Species" >
+      <Level name="TAX1" column="TAX1" uniqueMembers="false"/>
+      <Level name="TAX2" column="TAX2" uniqueMembers="false"/>
+      <Level name="TAX3" column="TAX3" uniqueMembers="false"/>
+      <Level name="TAX4" column="TAX4" uniqueMembers="false"/>
+      <Level name="TAX5" column="TAX5" uniqueMembers="false"/>
+      <Level name="TAX6" column="TAX6" uniqueMembers="false"/>
+      <Level name="CSQID" column="CSQID" uniqueMembers="false"/>
+    </Hierarchy>
+  </Dimension>
+  
+    <Measure name="SequenceCount" column="SEQ_DATA2"
+        aggregator="count" formatString="#,###"/>
+    <Measure name="SequenceSimilarity" column="SEQ_HASH"
+        aggregator="seqsimhash" formatString="#,###"/>
+  </Cube>
+  
+
+
+</Schema>

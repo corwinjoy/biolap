@@ -1,0 +1,45 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: ORA_SUFFIX - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\cjoy\LOCALS~1\Temp\RSP179.tmp" with contents
+[
+/nologo /MT /W3 /GX /O2 /I "D:\Oracle\product\10.1.0\Client_2\oci\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "ORA_SUFFIX_EXPORTS" /Fp"Release/ORA_SUFFIX.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\biolap\src\seqsim\ORA_SUFFIX.cpp"
+"D:\biolap\src\seqsim\shash.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\cjoy\LOCALS~1\Temp\RSP179.tmp" 
+Creating temporary file "C:\DOCUME~1\cjoy\LOCALS~1\Temp\RSP17A.tmp" with contents
+[
+/nologo /MT /W3 /GX /O2 /I "D:\Oracle\product\10.1.0\Client_2\oci\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "ORA_SUFFIX_EXPORTS" /Fp"Release/ORA_SUFFIX.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\biolap\src\seqsim\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\cjoy\LOCALS~1\Temp\RSP17A.tmp" 
+Creating temporary file "C:\DOCUME~1\cjoy\LOCALS~1\Temp\RSP17B.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib oci.lib /nologo /dll /incremental:no /pdb:"Release/ORA_SUFFIX.pdb" /machine:I386 /out:"Release/ORA_SUFFIX.dll" /implib:"Release/ORA_SUFFIX.lib" 
+.\Release\ORA_SUFFIX.obj
+.\Release\shash.obj
+.\Release\StdAfx.obj
+]
+Creating command line "link.exe @C:\DOCUME~1\cjoy\LOCALS~1\Temp\RSP17B.tmp"
+<h3>Output Window</h3>
+Compiling...
+StdAfx.cpp
+Compiling...
+ORA_SUFFIX.cpp
+shash.cpp
+Linking...
+   Creating library Release/ORA_SUFFIX.lib and object Release/ORA_SUFFIX.exp
+
+
+
+<h3>Results</h3>
+ORA_SUFFIX.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

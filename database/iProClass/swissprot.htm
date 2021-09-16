@@ -1,0 +1,354 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<title>Swissprot Import For Oracle</title>
+</head>
+
+<body>
+
+<h3 class="H2"><font color="#330099"
+face="Arial, Helvetica, sans-serif">Swissprot Import For Oracle</font></h3>
+<!--/TOC=h2--><a name="84979"></a>
+
+<p class="BP">We provide a few sample datasets and queries to
+test if the BLAST functions work correctly after ODM is
+installed.<a name="84982"></a></p>
+
+<p class="BP">The <code>DM_USER</code> schema contains the
+following sequence data tables.<a name="84984"></a></p>
+
+<p class="BP1"><code>SWISSPROT</code>: This table contains the
+sequences in Release 40 of the SwissProt dataset. This table has
+the sequence identifier, <code>creation_date</code>, <code>organism</code>,
+and <code>sequence_data</code> attributes. It has 101,602 protein
+sequences.</p>
+
+<pre class="CE1">SQL&gt; describe SWISSPROT;
+Name                                    Null?    Type
+--------------------------------------- -------  -------------
+SEQ_ID                                          VARCHAR2(32)
+CREATION_DATE                                   DATE
+ORGANISM                                        VARCHAR2(256)
+SEQ_DATA                                        CLOB
+</pre>
+
+<p class="BP1"><code>PROT_DB</code>: This table consists of 19
+protein sequences from the SwissProt dataset.</p>
+
+<pre class="CE1">SQL&gt; describe prot_db;
+Name                                     Null?    Type
+---------------------------------------- -------  -------------
+SEQ_ID                                            VARCHAR2(32)
+SEQ_DATA                                          CLOB
+</pre>
+
+<p class="BP1"><code>ECOLI10</code>: This table contains 10
+nucleotide sequences from the ecoli dataset.</p>
+
+<pre class="CE1">SQL&gt; describe ECOLI10;
+Name                                      Null?    Type
+----------------------------------------- -------- ---------------
+    SEQ_ID                                         VARCHAR2(32)
+    SEQ_DATA                                       CLOB
+</pre>
+
+<p class="BP"><a href="6blast.htm#85904">Table&nbsp;6-1</a>
+displays genetic codes and associated names.</p>
+
+<h5 class="TT"><a name="85898"></a><a name="85904"></a><font
+face="Arial, Helvetica, sans-serif"><em><strong>Table 6-1
+&nbsp;Table of Genetic Codes</strong></em></font></h5>
+
+<table border="1" cellpadding="3" cellspacing="0" width="100%"
+class="Formal" dir="ltr" title rules="groups" summary
+frame="hsides">
+<THEAD>    <tr>
+        <th align="left" valign="bottom" class="Formal"
+        scope="col"><a name="85908"></a><font
+        face="Arial, Helvetica, sans-serif"><strong>Genetic Code</strong></font></th>
+        <th align="left" valign="bottom" class="Formal"
+        scope="col"><a name="85910"></a><font
+        face="Arial, Helvetica, sans-serif"><strong>Name</strong></font></th>
+    </tr>
+</THEAD><TBODY>    <tr>
+        <td valign="top" class="Formal"><a name="85912"></a> <p
+        class="TB">1</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85914"></a> <p
+        class="TB">Standard</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85916"></a> <p
+        class="TB">2</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85918"></a> <p
+        class="TB">Vertebrate Mitochondrial</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85920"></a> <p
+        class="TB">3</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85922"></a> <p
+        class="TB">Yeast Mitochondrial</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85924"></a> <p
+        class="TB">4</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85926"></a> <p
+        class="TB">Mold Mitochondrial, Protozoan Mitochondrial,
+        Coelenterate Mitochondrial, Mycoplasma, Spiroplasm</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85928"></a> <p
+        class="TB">5</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85930"></a> <p
+        class="TB">Invertebrate Mitochondrial</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85932"></a> <p
+        class="TB">6</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85934"></a> <p
+        class="TB">Ciliate Nuclear, Dasycladacean Nuclear,
+        Hexamita Nuclear</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85936"></a> <p
+        class="TB">9</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85938"></a> <p
+        class="TB">Echinoderm Mitochondrial</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85940"></a> <p
+        class="TB">10</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85942"></a> <p
+        class="TB">Euplotid Nuclear</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85944"></a> <p
+        class="TB">11</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85946"></a> <p
+        class="TB">Bacterial and Plant Plastid</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85948"></a> <p
+        class="TB">12</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85950"></a> <p
+        class="TB">Alternative Yeast Nuclear</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85952"></a> <p
+        class="TB">13</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85954"></a> <p
+        class="TB">Ascidian Mitochondrial</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85956"></a> <p
+        class="TB">14</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85958"></a> <p
+        class="TB">Flatworm Mitochondrial</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85960"></a> <p
+        class="TB">15</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85962"></a> <p
+        class="TB">Blepharisma Macronuclear</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85964"></a> <p
+        class="TB">16</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85966"></a> <p
+        class="TB">Chlorophycean Mitochondrial</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85968"></a> <p
+        class="TB">21</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85970"></a> <p
+        class="TB">Trematode Mitochondrial</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85972"></a> <p
+        class="TB">22</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85974"></a> <p
+        class="TB">Scenedesmus Obliquus Mitochondrial</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" class="Formal"><a name="85976"></a> <p
+        class="TB">23</p>
+        </td>
+        <td valign="top" class="Formal"><a name="85978"></a> <p
+        class="TB">Thraustochytrium Mitochondrial Code</p>
+        </td>
+    </tr>
+</TBODY></table>
+<a name="82346"></a>
+
+<p class="BP">There are several public domain sequence databases
+available. One of them is the SwissProt database, which is a
+highly curated collection of protein sequences. The SwissProt
+database can be downloaded from</p>
+
+<pre class="CE">ftp://ftp.ebi.ac.uk/pub/databases/swissprot/release/sprot40.dat
+
+</pre>
+
+<p class="BP">In addition to the raw sequence data, the SwissProt
+database contains several other attributes of the sequence
+including organism, date published, date modified, published
+literature references, annotations, etc. BLAST requires only the
+sequence identifier and the sequence data to be stored to perform
+searches.<a name="82356"></a></p>
+
+<p class="BP">Depending on the needs of your specific
+application, different sets of these attributes may be important.
+Therefore, the database schema required to store the data needs
+to be appropriately designed. You can use a scripting language to
+parse the required fields from the SwissProt data and format the
+fields so that they can be loaded into an Oracle database.<a
+name="82588"></a></p>
+
+<p class="BP">The following Perl script outputs the sequence
+identifier, creation_date, organism, and sequence data in the
+required format for <code>sqlldr</code> is given below. (<code>sqlldr</code>
+is a program to load data into an Oracle database.)</p>
+
+<pre class="CE">#!/bin/perl
+#swissprot.pl &lt; input &gt; output
+#Input: protein db as provided by SWISSPROT
+#
+my $string = &quot;&quot;;
+my $indicator = &quot;&quot;;
+$sq = 0;
+$ac = 0;
+
+while(&lt;&gt;)
+{
+    #chop;
+    if ( /^\/\// ) {
+      print &quot;\n&quot;;
+      $sq = 0;
+      $ac = 0;
+      next;
+    }
+    if ($sq == 1) {
+        @words = split;
+        foreach $word (@words) {
+          print &quot;$word&quot;;
+        }
+        next;
+    }
+    if( /^AC(\s+)(\w+);/ ) {
+      if ($ac == 0) {
+        $indicator = $2;
+        print &quot;$indicator|&quot;;
+        $sq = 0;
+        $dt = 0;
+        $ac = 1;
+        next;
+      }
+    }
+    if ( /^OS(\s+)(.*)\./ ) {
+        $organism = $2;
+        print &quot;$organism|&quot;;
+        next;
+    }
+    if ( /^DT(\s+)(\S+)/ ) {
+        if ($dt == 0) {
+           print &quot;$2|&quot;;
+           $dt = 1;
+        }
+    }
+    if ( /^SQ(\s+)/ ) {
+        $sq = &quot;1&quot;;
+        next;
+    }
+}
+
+</pre>
+
+<p class="BP">Follow these steps to download, parse, and save the
+SwissProt data in an Oracle database:</p>
+
+<ol type="1" class="LN1">
+    <li type="1" value="1" class="LN1"><a name="82589"></a>Download
+        SwisProt data to the file <code>sprot40.dat</code>. </li>
+    <li type="1" value="2" class="LN1"><a name="82425"></a>Save
+        the perl script in a file named <code>swissprot.pl</code>,
+        type the command <pre class="CE1">swissprot.pl sprot40.dat &gt; sprot_formatted.txt
+
+  </pre>
+        <p class="BP1">This command will read the SwissProt data
+        stored in <code>sprot40.dat</code>, format it, and write
+        it out to <code>sprot_formatted.txt</code>.</p>
+    </li>
+    <li type="1" value="3" class="LN1"><a name="82430"></a>In
+        order to load the data using <code>sqlldr</code>, you
+        must create a table to hold the data and a control file.
+        Create the table <code>swissprot</code> using the
+        following SQL statement: <pre class="CE1">create table swissprot (SEQ_ID VARCHAR2(32), CREATION_DATE DATE,
+ORGANISM VARCHAR2(256), SEQ_DATA CLOB);
+</pre>
+        <pre class="CE">
+  </pre>
+        <p class="BP1">Create a control file named <code>sprot.ctl</code>
+        with the following contents:</p>
+        <pre class="CE1">LOAD DATA
+INFILE sprot40_formatted.txt
+INTO TABLE swissprot
+REPLACE
+FIELDS TERMINATED BY '|'
+TRAILING NULLCOLS
+(
+seq_id,
+creation_date,
+organism,
+seq_data char(100000)
+)
+</pre>
+        <pre class="CE">
+</pre>
+    </li>
+    <li type="1" value="4" class="LN1"><a name="82451"></a>Finally,
+        use the following command to load the data: <pre
+        class="CE1">sqlldr userid=&lt;user_name&gt;/&lt;passwd&gt; control=sprot.ctl log=sprot.log
+direct=TRUE data=sprot40_formatted.txt
+
+</pre>
+    </li>
+</ol>
+<a name="82455"></a>
+
+<p class="BP">The SwisProt data is now stored in the Oracle table
+<code>swissprot</code>.</p>
+</body>
+</html>

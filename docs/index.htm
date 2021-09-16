@@ -1,0 +1,696 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="AUTHOR" content="Corwin Joy">
+<title>BIOLAP</title>
+</head>
+
+<body>
+
+<h1 align="center">BIOLAP</h1>
+
+<h2>What is BIOLAP?</h2>
+
+<p><a href="http://en.wikipedia.org/wiki/OLAP">OLAP</a> is a
+powerful tool that is widely used by the business community to
+analyze large financial data sets. Despite the big data sets
+found in modern biology, OLAP has not been widely adopted by the
+biology community. We want to change that. BIOLAP is open source
+OLAP for biology data. We take the open source tools provided by
+the <a href="http://jpivot.sourceforge.net">JPivot</a> project,
+and extend them to handle biology data types. In our first
+release, we focus on extensions to analyze large genomic sequence
+databases.</p>
+
+<br><hr>
+<h2>Contents:</h2>
+
+<ul>
+    <li><a href="#OLAP">What is OLAP?</a></li>
+    <li><a href="#Biology">What is Different About Biology Data
+        Types?</a></li>
+    <li><a href="#example1">A Protein Sequence Example /
+        Screenshots.</a></li>
+    <li><a href="#example2">A Larger Example. The iProClass
+        Database.</a></li>
+    <li><a href="#Next">What's Next?</a></li>
+    <li><a href="#Downloads">Downloads.</a></li>
+    <li><a href="#References">References.</a></li>
+    <li><a href="#Links">Links.</a></li>
+    <li><a href="whitepaper.pdf">Further Reading / Whitepaper.</a></li>
+</ul>
+
+<br><hr>
+
+<h2><a name="OLAP">What is OLAP?</a></h2>
+
+<p>The basic idea is that data sets are viewed as cubes with
+hierarchies along each axis. To navigate the cube, we specify an
+aggregation function to say how to summarize information about
+groups of cells within the cube. This structure allows us to view
+large data sets in a highly summarized form, and then expand the
+data along each axis as needed to see finer grained features.
+More details can be found <a
+href="http://en.wikipedia.org/wiki/OLAP">here</a>.</p>
+
+<p><img src="cube.jpg" width="448" height="357"></p>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<h2><a name="Biology">What is Different About Biology Data Types?</a></h2>
+
+<p>In traditional OLAP, we are trying to summarize sets of
+numbers. In biology, the data we are working with is often
+non-numeric and the correct way to summarize that data may not be
+number. As a first example, suppose we are interested in
+summarizing a set of protein sequences. Usually these sequences
+are represented as strings of letters and there are several
+reasonable ways to summarize a group of sequences. We might want
+a numeric <a
+href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&amp;db=PubMed&amp;list_uids=12611807&amp;dopt=Abstract&amp;holding=f1000">similarity
+score</a>, we might want text output that shows the most <a
+href="http://meme.sdsc.edu/meme/intro.html">common motifs</a>
+shared by the sequences, we might even want a scatter plot or a
+tree diagram which shows how the sequences cluster together. This
+is just one example. Other common biology types are matrices for
+microarray data, graphs for chemical structures, or <a
+href="http://bcb.molgen.mpg.de/Kriegel.pdf">images</a> from
+various kinds of instruments. For this reason, in order to handle
+biology data sets we have two main requirements:</p>
+
+<ol>
+    <li>We need to be able to define new aggregation functions
+        that can summarize groups of non-numeric data.</li>
+    <li>We need our aggregation functions to be able to return
+        more than numbers. They need to be able to return text,
+        images or other data types.</li>
+</ol>
+
+<p>Sounds hard? Not if you have the right tools!</p>
+
+<ol>
+    <li>Modern databases allow you to define your own functions
+        to summarize groups of objects. Here's how: (<a
+        href="http://www.lc.leidenuniv.nl/awcourse/oracle/appdev.920/a96595/dci11agg.htm#1004572">Oracle</a>,
+        <a
+        href="http://dev.mysql.com/doc/refman/5.0/en/udf-aggr-calling.html">MySQL</a>,
+        <a
+        href="http://www.novicksoftware.com/Articles/sql-2005-product-user-defined-aggregate.htm">SQL
+        Server</a>).</li>
+    <li><a href="http://mondrian.sourceforge.net">Mondrian</a>,
+        an open source OLAP tool, allows you to use your own
+        aggregate functions. Even better, your functions can
+        return a string which could be simple text or could be an
+        HTML link to a resource such as an image, a graph, a
+        chemical drawing, or a protein structure animation.</li>
+</ol>
+
+<br><hr>
+<h2><a name="example1">A Protein Sequence Example / Screenshots.</a></h2>
+
+<p>As an example, we start with a set of related olfactory and
+rhodopsin proteins grouped using a <a
+href="http://cnx.rice.edu/content/m11052/latest/">cladogram</a>.</p>
+
+<p><img src="cladogram.jpg" width="531" height="407"></p>
+
+<p>For each of these proteins, we have annotations describing
+their function and taxonomy. We use these annotations as
+dimensions for a cube and define an aggregation function (see the
+<a href="whitepaper.pdf">whitepaper</a> for details) that
+measures sequence similarity. Here is what this gives us in <a
+href="http://jpivot.sourceforge.net">JPivot</a>:</p>
+
+<p>We start by looking at the most aggregated view of the data,
+with all proteins grouped together.</p>
+
+<p><img src="gpcr_summary.jpg" width="576" height="222"></p>
+
+<p>&nbsp;</p>
+
+<p>We can expand this by protein function dimension. Proteins
+within the same functional category have a higher similarity.</p>
+
+<p><img src="gpcr_by_fn.jpg" width="576" height="295"></p>
+
+<p>&nbsp;</p>
+
+<p>Expand by taxonomy dimension. Proteins within the same
+taxonomy class and functional category have an even higher
+similarity.</p>
+
+<p><img src="gpcr_by_tax.jpg" width="575" height="449"></p>
+
+<p>&nbsp;</p>
+
+<p>The similarity scores reflect what we would expect from the
+cladogram which was calculated via a full multiple sequence
+alignment. Drill through to see the underlying mammalian sequence
+data for any cell. In this case, we drill on the mammalian
+rhodopsin sequences.</p>
+
+<p><img src="gpcr_drill.jpg" width="576" height="138"></p>
+
+<br><hr>
+<h2><a name="example2">A Larger Example.</a> The <a
+href="http://pir.georgetown.edu/iproclass/">iProClass</a>
+Database.</h2>
+
+<p>As a real-world test, we next applied this tool to the <a
+href="http://pir.georgetown.edu/iproclass/">iProClass</a>
+database. This database contains over 2 million protein
+sequences, annotated with GO classification, PIR superfamilies,
+motifs, protein domains etc. All of these annotations are
+potentially useful as dimensions for a cube. We chose two obvious
+ones, the GO protein function hierarchy and the taxonomy /
+lineage information for the sequence. By restricting our focus to
+sequences containing these annotations we came up with a total of
+44,441 sequences for our cube. In this case, the initial
+similarity calculation for these 44k sequences took over 10
+minutes. Fortunately, the OLAP browser allows us to pre-calculate
+similarities and store them in a table so that the response time
+of the viewer is near instantaneous. Again, an OLAP browser
+allows us to easily navigate this large data set.</p>
+
+<p>Expand one level deep by GO classification and top level
+Taxonomy classification:</p>
+
+<p><img src="clip_image002.jpg" width="518" height="555"></p>
+
+<p><br>
+</p>
+
+<p>Expand by GO Hierarchy:</p>
+
+<p><img src="clip_image004.jpg" width="503" height="521"></p>
+
+<p><br>
+</p>
+
+<p>From any cell we can drill down to view the underlying data
+for that group of sequences:</p>
+
+<p><img src="iproclass_drill.jpg" width="1047" height="521"></p>
+
+<br><hr>
+<h2><a name="Next">What's Next?</a></h2>
+
+<p><strong>Get feedback from you!</strong> Contact us on our
+forum with suggestions on what kinds of aggregation functions
+might be useful, or suggestions for applications.</p>
+
+<p><strong>Add more aggregation functions.</strong> One such
+function would be <a href="http://meme.sdsc.edu/meme/intro.html">MEME</a>
+to show conserved motifs in a set of protein sequences. </p>
+
+<p>Either as text,</p>
+
+<table border="0">
+    <tr>
+        <td><table border="0">
+            <tr>
+                <th>&nbsp;</th>
+            </tr>
+            <tr>
+                <td><font color="#D5F0FF">. </font></td>
+            </tr>
+            <tr>
+                <td colspan="8">&nbsp;</td>
+                <th><a href="#consensus_doc" name="consensus1">Multilevel
+                </a></th>
+                <td>&nbsp;</td>
+                <th>&nbsp;</th>
+                <td><font color="#12F644"><b><tt>G</tt></b></font>
+                </td>
+                <td><font color="#0000FF"><b><tt>A</tt></b></font>
+                </td>
+                <td><font color="#0000FF"><b><tt>C</tt></b></font>
+                </td>
+                <td><font color="#FFFF00"><b><tt>P</tt></b></font>
+                </td>
+                <td><font color="#0000FF"><b><tt>A</tt></b></font>
+                </td>
+                <td><font color="#0000FF"><b><tt>V</tt></b></font>
+                </td>
+                <td><font color="#FF0000"><b><tt>K</tt></b></font>
+                </td>
+                <td><font color="#FFFF00"><b><tt>P</tt></b></font>
+                </td>
+                <td><font color="#0000FF"><b><tt>V</tt></b></font>
+                </td>
+                <td><font color="#12F644"><b><tt>D</tt></b></font>
+                </td>
+                <td><font color="#008000"><b><tt>N</tt></b></font>
+                </td>
+                <td><font color="#0000FF"><b><tt>F</tt></b></font>
+                </td>
+                <td><font color="#12F644"><b><tt>D</tt></b></font>
+                </td>
+                <td><font color="#0000FF"><b><tt>I</tt></b></font>
+                </td>
+                <td><font color="#008000"><b><tt>S</tt></b></font>
+                </td>
+                <td><font color="#FF0000"><b><tt>K</tt></b></font>
+                </td>
+                <td><font color="#0000FF"><b><tt>F</tt></b></font>
+                </td>
+                <td><font color="#0000FF"><b><tt>A</tt></b></font>
+                </td>
+                <td><font color="#12F644"><b><tt>G</tt></b></font>
+                </td>
+                <td><font color="#008000"><b><tt>T</tt></b></font>
+                </td>
+                <td><font color="#0000FF"><b><tt>W</tt></b></font>
+                </td>
+                <td><font color="#12F644"><b><tt>H</tt></b></font>
+                </td>
+                <td><font color="#12F644"><b><tt>E</tt></b></font>
+                </td>
+                <td><font color="#0000FF"><b><tt>I</tt></b></font>
+                </td>
+                <td><font color="#0000FF"><b><tt>A</tt></b></font>
+                </td>
+                <td><font color="#FF0000"><b><tt>K</tt></b></font></td>
+            </tr>
+            <tr>
+                <td colspan="8">&nbsp;</td>
+                <th><a href="#consensus_doc">consensus </a></th>
+                <td>&nbsp;</td>
+                <th>&nbsp;</th>
+                <td><font color="#0000FF"><tt>C</tt></font> </td>
+                <td><font color="#FF0000"><tt>R</tt></font> </td>
+                <td><font color="#12F644"><tt>E</tt></font> </td>
+                <td><font color="#12F644"><tt>E</tt></font> </td>
+                <td><font color="#12F644"><tt>D</tt></font> </td>
+                <td><font color="#0000FF"><tt>F</tt></font> </td>
+                <td><font color="#008000"><tt>Q</tt></font> </td>
+                <td><font color="#008000"><tt>T</tt></font> </td>
+                <td><font color="#12F644"><tt>G</tt></font> </td>
+                <td><font color="#12F644"><tt>E</tt></font> </td>
+                <td><font color="#12F644"><tt>D</tt></font> </td>
+                <td><font color="#0000FF"><tt>L</tt></font> </td>
+                <td><font color="#008000"><tt>N</tt></font> </td>
+                <td><font color="#FF0000"><tt>K</tt></font> </td>
+                <td><font color="#0000FF"><tt>A</tt></font> </td>
+                <td><font color="#0000FF"><tt>A</tt></font> </td>
+                <td><font color="#0000FF"><tt>I</tt></font> </td>
+                <td><font color="#12F644"><tt>H</tt></font> </td>
+                <td>&nbsp;</td>
+                <td><font color="#0000FF"><tt>A</tt></font> </td>
+                <td>&nbsp;</td>
+                <td><font color="#12F644"><tt>Y</tt></font> </td>
+                <td><font color="#0000FF"><tt>A</tt></font> </td>
+                <td><font color="#0000FF"><tt>L</tt></font> </td>
+                <td><font color="#0000FF"><tt>I</tt></font> </td>
+                <td><font color="#0000FF"><tt>L</tt></font></td>
+            </tr>
+            <tr>
+                <td colspan="8">&nbsp;</td>
+                <th><a href="#consensus_doc">sequence </a></th>
+                <td>&nbsp;</td>
+                <th>&nbsp;</th>
+                <td><font color="#12F644"><tt>H</tt></font> </td>
+                <td><font color="#12F644"><tt>Y</tt></font> </td>
+                <td><font color="#0000FF"><tt>L</tt></font> </td>
+                <td><font color="#0000FF"><tt>I</tt></font> </td>
+                <td><font color="#12F644"><tt>E</tt></font> </td>
+                <td><font color="#008000"><tt>S</tt></font> </td>
+                <td><font color="#FF0000"><tt>R</tt></font> </td>
+                <td><font color="#0000FF"><tt>V</tt></font> </td>
+                <td><font color="#FF0000"><tt>K</tt></font> </td>
+                <td><font color="#FF0000"><tt>K</tt></font> </td>
+                <td><font color="#12F644"><tt>G</tt></font> </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td><font color="#0000FF"><tt>L</tt></font> </td>
+                <td><font color="#12F644"><tt>E</tt></font> </td>
+                <td><font color="#008000"><tt>N</tt></font> </td>
+                <td><font color="#0000FF"><tt>V</tt></font> </td>
+                <td><font color="#008000"><tt>N</tt></font> </td>
+                <td>&nbsp;</td>
+                <td><font color="#12F644"><tt>E</tt></font> </td>
+                <td>&nbsp;</td>
+                <td><font color="#0000FF"><tt>W</tt></font> </td>
+                <td><font color="#008000"><tt>S</tt></font> </td>
+                <td><font color="#0000FF"><tt>M</tt></font> </td>
+                <td>&nbsp;</td>
+                <td><font color="#0000FF"><tt>M</tt></font></td>
+            </tr>
+            <tr>
+                <td colspan="8">&nbsp;</td>
+                <th>&nbsp;</th>
+                <td>&nbsp;</td>
+                <th>&nbsp;</th>
+                <td><font color="#008000"><tt>Q</tt></font> </td>
+                <td>&nbsp;</td>
+                <td><font color="#0000FF"><tt>V</tt></font> </td>
+                <td><font color="#008000"><tt>S</tt></font> </td>
+                <td><font color="#008000"><tt>S</tt></font> </td>
+                <td><font color="#008000"><tt>T</tt></font> </td>
+                <td><font color="#008000"><tt>S</tt></font> </td>
+                <td>&nbsp;</td>
+                <td><font color="#0000FF"><tt>M</tt></font> </td>
+                <td><font color="#008000"><tt>N</tt></font> </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td><font color="#0000FF"><tt>V</tt></font> </td>
+                <td><font color="#008000"><tt>Q</tt></font> </td>
+                <td><font color="#FF0000"><tt>R</tt></font> </td>
+                <td><font color="#12F644"><tt>Y</tt></font> </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td><font color="#FF0000"><tt>K</tt></font> </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td><font color="#008000"><tt>T</tt></font> </td>
+                <td><font color="#0000FF"><tt>V</tt></font> </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="8">&nbsp;</td>
+                <th>&nbsp;</th>
+                <td>&nbsp;</td>
+                <th>&nbsp;</th>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td><font color="#0000FF"><tt>V</tt></font> </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td><font color="#FF0000"><tt>R</tt></font> </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td><font color="#0000FF"><tt>W</tt></font></td>
+            </tr>
+        </table>
+        </td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
+<p>or as a block diagram,</p>
+
+<table border="1">
+<TBODY>    <tr>
+        <th>Name </th>
+        <th>Combined<br>
+        p-value </th>
+        <th align="left">&nbsp;&nbsp; Motifs </th>
+    </tr>
+    <tr>
+        <td><a name="d0"></a>ICYA_MANSE </td>
+        <td align="right" nowrap>9.47e-58 </td>
+        <td><table border="0" cellpadding="0" cellspacing="0"
+        width="410">
+<TBODY>            <tr>
+                <td align="middle" width="12"><hr size="4"
+                noshade>
+                </td>
+                <td align="middle" width="52" bgcolor="#00FFFF">1
+                </td>
+                <td align="middle" width="134"><hr size="4"
+                noshade>
+                </td>
+                <td align="middle" width="40" bgcolor="#0000FF"><font
+                color="#FFFFFF">2 </font></td>
+                <td align="middle" width="2"><hr size="4" noshade>
+                </td>
+                <td align="middle" width="46" bgcolor="#FF0000"><font
+                color="#FFFFFF">3 </font></td>
+                <td align="middle" width="92"><hr size="4"
+                noshade>
+                </td>
+                <td align="middle" width="32">&nbsp;</td>
+            </tr>
+</TBODY>        </table>
+        </td>
+    </tr>
+    <tr>
+        <td><a name="d1"></a>LACB_BOVIN </td>
+        <td align="right" nowrap>1.58e-23 </td>
+        <td><table border="0" cellpadding="0" cellspacing="0"
+        width="410">
+<TBODY>            <tr>
+                <td align="middle" width="28"><hr size="4"
+                noshade>
+                </td>
+                <td align="middle" width="52" bgcolor="#00FFFF">1
+                </td>
+                <td align="middle" width="128"><hr size="4"
+                noshade>
+                </td>
+                <td align="middle" width="40" bgcolor="#0000FF"><font
+                color="#FFFFFF">2 </font></td>
+                <td align="middle" width="108"><hr size="4"
+                noshade>
+                </td>
+                <td align="middle" width="54">&nbsp;</td>
+            </tr>
+</TBODY>        </table>
+        </td>
+    </tr>
+    <tr>
+        <td><a name="d2"></a>BBP_PIEBR </td>
+        <td align="right" nowrap>2.98e-58 </td>
+        <td><table border="0" cellpadding="0" cellspacing="0"
+        width="410">
+<TBODY>            <tr>
+                <td align="middle" width="10"><hr size="4"
+                noshade>
+                </td>
+                <td align="middle" width="52" bgcolor="#00FFFF">1
+                </td>
+                <td align="middle" width="128"><hr size="4"
+                noshade>
+                </td>
+                <td align="middle" width="40" bgcolor="#0000FF"><font
+                color="#FFFFFF">2 </font></td>
+                <td align="middle" width="2"><hr size="4" noshade>
+                </td>
+                <td align="middle" width="46" bgcolor="#FF0000"><font
+                color="#FFFFFF">3 </font></td>
+                <td align="middle" width="68"><hr size="4"
+                noshade>
+                </td>
+                <td align="middle" width="64">&nbsp;</td>
+            </tr>
+</TBODY>        </table>
+        </td>
+    </tr>
+    <tr>
+        <td><a name="d3"></a>RETB_BOVIN </td>
+        <td align="right" nowrap>1.16e-27 </td>
+        <td><table border="0" cellpadding="0" cellspacing="0"
+        width="410">
+<TBODY>            <tr>
+                <td align="middle" width="6"><hr size="4" noshade>
+                </td>
+                <td align="middle" width="52" bgcolor="#00FFFF">1
+                </td>
+                <td align="middle" width="142"><hr size="4"
+                noshade>
+                </td>
+                <td align="middle" width="40" bgcolor="#0000FF"><font
+                color="#FFFFFF">2 </font></td>
+                <td align="middle" width="126"><hr size="4"
+                noshade>
+                </td>
+                <td align="middle" width="44">&nbsp;</td>
+            </tr>
+</TBODY>        </table>
+        </td>
+    </tr>
+    <tr>
+        <td><a name="d4"></a>MUP2_MOUSE </td>
+        <td align="right" nowrap>3.44e-23 </td>
+        <td><table border="0" cellpadding="0" cellspacing="0"
+        width="410">
+<TBODY>            <tr>
+                <td align="middle" width="32"><hr size="4"
+                noshade>
+                </td>
+                <td align="middle" width="52" bgcolor="#00FFFF">1
+                </td>
+                <td align="middle" width="124"><hr size="4"
+                noshade>
+                </td>
+                <td align="middle" width="40" bgcolor="#0000FF"><font
+                color="#FFFFFF">2 </font></td>
+                <td align="middle" width="112"><hr size="4"
+                noshade>
+                </td>
+                <td align="middle" width="50">&nbsp;</td>
+            </tr>
+</TBODY>        </table>
+        </td>
+    </tr>
+    <tr>
+        <th align="left" rowspan="2" colspan="2"><font
+        color="#0000FF">SCALE </font></th>
+        <td><table border="0" cellpadding="0" cellspacing="0"
+        width="410">
+<TBODY>            <tr>
+                <td width="48"><font color="#0000FF">| </font></td>
+                <td width="50"><font color="#0000FF">| </font></td>
+                <td width="50"><font color="#0000FF">| </font></td>
+                <td width="50"><font color="#0000FF">| </font></td>
+                <td width="50"><font color="#0000FF">| </font></td>
+                <td width="50"><font color="#0000FF">| </font></td>
+                <td width="50"><font color="#0000FF">| </font></td>
+                <td width="50"><font color="#0000FF">| </font></td>
+            </tr>
+            <tr>
+                <td width="48"><font color="#0000FF">1 </font></td>
+                <td width="50"><font color="#0000FF">25 </font></td>
+                <td width="50"><font color="#0000FF">50 </font></td>
+                <td width="50"><font color="#0000FF">75 </font></td>
+                <td width="50"><font color="#0000FF">100 </font></td>
+                <td width="50"><font color="#0000FF">125 </font></td>
+                <td width="50"><font color="#0000FF">150 </font></td>
+                <td width="50"><font color="#0000FF">175 </font></td>
+            </tr>
+</TBODY>        </table>
+        </td>
+    </tr>
+</TBODY></table>
+<INPUT type="hidden" value="
+ICYA_MANSE 9.47e-58 3   1 6 2.61e-24  2 99 4.03e-19  3 120 1.93e-26
+LACB_BOVIN 1.58e-23 2   1 14 2.99e-18  2 104 6.57e-13
+BBP_PIEBR 2.98e-58 3   1 5 1.34e-24  2 95 1.04e-18  3 116 6.11e-27
+RETB_BOVIN 1.16e-27 2   1 3 1.83e-19  2 100 2.40e-16
+MUP2_MOUSE 3.44e-23 2   1 16 6.78e-17  2 104 6.24e-14
+" name="motif-summary">
+<p><br>
+or as <a
+href="http://www-lmmb.ncifcrf.gov/~toms/sequencelogo.html">LOGOS</a>
+output.<br>
+<img src="logos.gif" width="141" height="127"><br>
+<br>
+<strong>More biology examples.</strong> Extend the iProClass
+example further or find other sequence databases where we can
+pick off useful genomic annotations to use as dimensions for a
+cube. </p>
+
+<br><hr>
+<h2><a name="Downloads">Downloads.</a></h2>
+
+<p><strong>JPivot.</strong> The best place to start is with the
+basic JPivot tool. <a
+href="http://jpivot.sourceforge.net/index.html">Download</a> this
+tool along with the mondrian example data. Follow the directions
+to create an ODBC data connection called <tt>MondrianFoodMart</tt>.
+Deploy the the <tt>jpivot.war</tt> file to your <a
+href="http://jakarta.apache.org/tomcat/">tomcat</a> webapps
+server directory.</p>
+
+<p><a href="http://sourceforge.net/projects/biolap"><strong>BIOLAP
+Source Code + Examples.</strong></a></p>
+
+<ul>
+    <li><strong>Simple Example. </strong>To run this example, you
+        will need Oracle 9i or higher running on Windows. (This
+        is because I am lazy and have only defined an Oracle
+        interface for the similarity function - JPivot will work
+        against numerous database types). See the ReadMe for
+        detailed instructions. </li>
+    <li><strong>iProClass Database Example. </strong>Instructions
+        and scripts to run the browser versus the iProClass
+        database. Key tables you will need are the iProClass
+        database, the core GO tables for protein classification
+        and sequences from Swissprot. This shows how to import
+        these tables, and gives a script which joins the
+        resulting data together for reporting purposes.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<br><hr>
+<h2><a name="References">References.</a></h2>
+
+<p><em>Huyn N., </em><a
+href="http://www.dia.uniroma3.it/~vldbproc/076_645.pdf"><em>OLAP
+for Clinical Trials</em></a><em>, </em>Proceedings of the 27th
+VLDB Conference, Roma, Italy, 2001.<br>
+<strong>Abstract:</strong> On-line analysis of clinical study
+data has not benefited from recent advances in OLAP
+technologies.We examine the analysis requirements posed by the
+biotech domain that are not met by traditional OLAP. To
+accommodate these new requirements, we propose the concept of
+Scientific OLAP which applies more broadly to data analysis in
+controlled scientific experiments. We describe our experience
+implementing such a system for the support of biomarker discovery
+and we identify some key challenges that must be overcome before
+OLAP can be widely adopted in the biotech industry.</p>
+
+<p><em>Vinga S., Almeida J., </em><a
+href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&amp;db=PubMed&amp;list_uids=12611807&amp;dopt=Abstract&amp;holding=f1000"><em>Alignment-free
+sequence comparison-a review,</em></a> Bioinformatics:2003 Mar
+1;19(4):513-23.<br>
+<strong>Abstract: </strong>Genetic recombination and, in
+particular, genetic shuffling are at odds with sequence
+comparison by alignment, which assumes conservation of contiguity
+between homologous segments. A variety of theoretical foundations
+are being used to derive alignment-free methods that overcome
+this limitation. The formulation of alternative metrics for
+dissimilarity between sequences and their algorithmic
+implementations are reviewed.<br>
+<br>
+<em>Kriegel H., Seidel T., </em><a
+href="http://bcb.molgen.mpg.de/Kriegel.pdf"><em>Shape-based
+Similarity Search in Large Biomolecular Databases</em></a>.<br>
+<strong>Abstract:</strong> As a new approach to explore large
+structural molecular databases, we suggest a shape-based
+similarity model for 3D objects including proteins, DNA
+structures, or medical images. On top of the model, we have
+developed efficient index-based algorithms that support mining in
+very large biological databases which are expected to rapidly
+grow in the context of todays and tomorrows genomic, post-genomic
+and proteomic research activities. Experiments on a large 3D
+protein database demonstrate both, a good classification accuracy
+of our model (above 90% like FSSP or CATH) and the good
+performance of our flexible query processor. </p>
+
+<p><em>Le S., Ho T., Phan T.</em>, <a
+href="http://www.jsbi.org/journal/GIW04/GIW04F009.pdf"><em>A
+Novel Graph-Based Similarity Measure for 2D Chemical Structures</em></a>,
+Genome Informatics 15(2): 82-91 (2004).<br>
+<strong>Abstract:</strong> In this paper, we propose a
+graph-based method to measure the similarity between chemical
+compounds described by 2D form. Our main idea is to measure the
+similarity between two compounds based on edges, nodes, and
+connectivity of their common subgraphs. We applied the proposed
+similarity measure in combination with a clustering method to
+more than eleven thousand compounds in the chemical compound
+database KEGG/LIGAND and discovered that compound clusters with
+highly similar structure compounds that share common names, take
+part in the same pathways, and have the same requirement of
+enzymes in reactions. Furthermore, we discovered the surprising
+sameness between pathway modules identified by clusters of
+similar structure compounds and that identified by genomic
+contexts, namely, operon structures of enzyme genes.</p>
+
+<br><hr>
+<h2><a name="Links">Links.</a></h2>
+
+<p><a href="http://meme.sdsc.edu/meme/intro.html">MEME</a>. A
+system for motif discovery from a set of sequences.<br>
+</p>
+
+<p>&nbsp;</p>
+
+<p><a href="http://sourceforge.net"><img
+src="http://sourceforge.net/sflogo.php?group_id=17082&amp;type=5"
+alt="SourceForge Logo" border="0"></a> </p>
+</body>
+</html>
